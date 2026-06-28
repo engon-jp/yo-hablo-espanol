@@ -1,0 +1,13 @@
+{
+  "name": "スペイン語 文法トレーナー",
+  "short_name": "ES文法",
+  "description": "スペイン語の動詞活用と語順（肯定・否定・疑問）を練習する学習アプリ",
+  "lang": "ja",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff7f2",
+  "theme_color": "#c0392b",
+  "icons": []
+}
