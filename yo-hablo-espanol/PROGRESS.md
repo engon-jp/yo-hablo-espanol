@@ -1,4 +1,4 @@
-# スペイン語 文法トレーナー — PROGRESS
+# ¡Yo hablo español! — PROGRESS
 
 ## 概要
 初学者向けに、スペイン語の動詞活用と語順（肯定・否定・疑問）を練習する学習アプリ。
@@ -13,30 +13,45 @@
 ### ファイル構成
 ```
 アプリ制作/
-├─ index.html              … 本体（これ1枚で動く）
-├─ assets/audio/           … phrase_01.mp3〜phrase_48.mp3 配置済み（README に命名規則・対応表、音声生成メモ.md に生成手順）
-│  └─ conjugation/         … 活用表用 mp3（9動詞）
-├─ manifest.json           … スマホ「ホーム画面に追加」用
-└─ PROGRESS.md             … このファイル
+├─ index.html              … リダイレクト専用（→ yo-hablo-espanol/ へ転送）
+└─ yo-hablo-espanol/
+   ├─ index.html           … 本体（これ1枚で動く）
+   ├─ manifest.json        … スマホ「ホーム画面に追加」用
+   ├─ audio-check.html     … 音声確認ツール（48フレーズの再生・判定）
+   ├─ assets/audio/        … phrase_01.mp3〜phrase_48.mp3 配置済み
+   │  └─ conjugation/      … 活用表用 mp3（9動詞）
+   └─ PROGRESS.md          … このファイル
 ```
 
 ## 設計メモ（実装の要点）
 - **文パーサ** `parsePhrase`：全48問が「[¿] 主語 [no] 動詞 目的語 [./?]」の規則構造 → 自動分解して各レベルの空欄を生成。
 - **規則活用** `conjugate`：9動詞すべて規則（-ar/-er/-ir）。Nivel 1 の動詞4択・活用表を動的生成。
 - **厳格判定** `strictEqual`：大小文字・アクセント・`¿?!.`・`no` をそのまま比較（前後空白のみ無視）。Nivel 2/3 共通。
-- **Nivel 4 柔軟判定** `judgeLevel4`：yo/tú/nosotros(as)/vosotros(as)は主語省略・語順変化を正解扱い。3人称は主語必須。文末記号・アクセントは厳格。
+- **Nivel 4 自己採点方式**：「解答する」→テキストエリアをロック→正解文を表示→「⭕ 正解」「✕ 不正解」ボタンで自己判定→`finishAnswer(ok)` に渡す。自動採点を廃止（正しい文を誤りと判定する問題を回避するため）。
 - **誤選択肢**：主語＝12種プールから（nosotros/nosotrasペアは同時出現不可）／動詞＝同動詞の他人称のみ／目的語＝動詞別プール4語を毎回シャッフル。
 - **出題**：各レベル独立の25問ラウンド。全48問からランダム抽出、消化後に再抽選。`SAVE_KEY=es-trainer-v2`。
 - **データ修正**：仕様書 #36 の誤記 `Ellas write...` を `Ellas escriben un mensaje.` で登録済み。男性複数（Nosotros/Vosotros）問題に「（男性）」明記済み。
 
-## 現在のステータス（最終更新: 2026-06-30）
+## 現在のステータス（最終更新: 2026-07-01）
+
+**¡Yo hablo español! アプリ完成・公開済み**
+
 - [x] index.html 実装（Nivel 1〜4・全機能）
 - [x] assets/audio/README.md・音声生成メモ.md
-- [x] manifest.json
-- [x] 48個の mp3 音声配置済み（ElevenLabs Ninoska / Multilingual v2 + Claude Codeで無音検知分割）
-- [x] 活用表用 mp3 音声9個を配置し、活用表画面に音声ボタンを追加
-- [x] GitHub Pages 公開済み（2026-06-30）
-- [x] 動作検証済み（375×812スマホ実寸、全レベル、全機能）
+- [x] manifest.json（アプリ名「スペイン語学習アプリ ¡Yo hablo español!」）
+- [x] ページタイトル同上に統一
+- [x] 全48フレーズ音声を ElevenLabs Ninoska / Multilingual v2 で全文再生成（2026-07-01）
+  - phrase_02〜10：1-10.mp3 を正しい境界で再切り出し（前回のzshインデックスズレ修正）
+  - phrase_47：¿Usted compra un regalo? を疑問文イントネーションで再生成
+- [x] 活用表用 mp3（9動詞）配置・音声ボタン追加
+- [x] Nivel 4 を自動採点→自己採点方式に変更（2026-07-01）
+- [x] スペイン語否定文9文を自然な形に修正（"no come un tomate"→"no come tomates" 等）
+- [x] OBJECT_POOLS を修正後の文に合わせて更新
+- [x] スコア表示「正解 X / Y 問」形式・↺リセットボタン追加
+- [x] 正解文の太字表示
+- [x] ファイル構成を yo-hablo-espanol/ サブフォルダに整理（2026-07-01）
+- [x] audio-check.html（音声確認ツール）追加
+- [x] GitHub Pages 公開済み・動作検証済み
 
 ## 公開URL
 - **GitHub Pages**: https://engon-jp.github.io/yo-hablo-espanol/
@@ -61,7 +76,7 @@
 - **Nivel 1**：主語（「主語」ラベル）・動詞（不定詞表示）をタップ→4択。同動詞の活用形のみ。nosotros/nosotrasなど性別対が同時に並ばない排他処理。noは確定表示。未選択で解答しても不正解として次へ進める。
 - **Nivel 2**：主語・no・動詞を手入力。動詞欄に薄字で不定詞ヒント。文頭自動大文字化。
 - **Nivel 3**：主語・no・動詞は手入力、最後の空欄はタップ4択（動詞別プールを毎回シャッフル）。未選択で解答しても不正解として次へ進める。
-- **Nivel 4**：日本語のみ表示→全文手入力。**柔軟判定**：yo/tú/nosotros(as)/vosotros(as)は主語省略可・語順変化も正解、3人称は主語必須。
+- **Nivel 4**：日本語のみ表示→全文手入力→正解を表示→「⭕ 正解」「✕ 不正解」で自己採点。
 - 「← 前」ボタン：前の問題の正解を確認できる（スコアに影響なし、pos=0はdisabled）
 
 ### 参照ビュー（活用表・人称代名詞表）
@@ -89,6 +104,7 @@
 1. **Phase B**（任意・後回しでOK）：画像生成（Atelier等）で水彩タッチのマスコット（歩く本・スペイン/ラテンアメリカ衣装）と背景を作成し、SVG仮マスコット・CSS装飾を差し替える
 2. ゲーム機能（ハート制/連続正解/XP等）は「事前によく検討してから」実装＝引き続き保留
 3. 改善アイデア（下記）に必要なら着手
+4. **このフォルダで今後別のアプリも制作予定**（¡Yo hablo español! は yo-hablo-espanol/ サブフォルダに整理済み）
 
 ## 改善アイデア（任意）
 - 1セット（25問）終了時の正答率サマリ画面。
