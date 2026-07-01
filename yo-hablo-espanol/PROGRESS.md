@@ -7,7 +7,7 @@
 
 ## 基本情報
 - 形式：ビルド不要の**単一HTMLファイル**（`index.html` に HTML/CSS/JS・48問データ・全ロジックを内包）。依存ライブラリなし。
-- 音声：`assets/audio/phrase_01〜48.mp3` を再生。活用表では `assets/audio/conjugation/*.mp3` を再生。**未配置の間は端末の音声合成（Web Speech API・es-ES）で自動代替**。mp3 を置けば自動でそちら優先。
+- 音声：`assets/audio/phrase_01〜48.mp3` を再生。活用表では `assets/audio/conjugation/*.mp3`、人称代名詞表では `assets/audio/pronouns/*.mp3` を再生。**未配置の間は端末の音声合成（Web Speech API・es-ES）で自動代替**。mp3 を置けば自動でそちら優先。
 - 対象：学生に配布し、スマホでも使える（レスポンシブ／アクセント補助バー付き）。
 
 ### ファイル構成
@@ -19,7 +19,8 @@
    ├─ manifest.json        … スマホ「ホーム画面に追加」用
    ├─ audio-check.html     … 音声確認ツール（48フレーズの再生・判定）
    ├─ assets/audio/        … phrase_01.mp3〜phrase_48.mp3 配置済み
-   │  └─ conjugation/      … 活用表用 mp3（9動詞）
+   │  ├─ conjugation/      … 活用表用 mp3（9動詞）
+   │  └─ pronouns/         … 主語人称代名詞表用 mp3（単数・複数）
    └─ PROGRESS.md          … このファイル
 ```
 
@@ -44,6 +45,7 @@
   - phrase_02〜10：1-10.mp3 を正しい境界で再切り出し（前回のzshインデックスズレ修正）
   - phrase_47：¿Usted compra un regalo? を疑問文イントネーションで再生成
 - [x] 活用表用 mp3（9動詞）配置・音声ボタン追加
+- [x] 主語人称代名詞表に単数・複数の音声ボタン追加（ElevenLabs音声を配置、2026-07-01）
 - [x] Nivel 4 を自動採点→自己採点方式に変更（2026-07-01）
 - [x] スペイン語否定文9文を自然な形に修正（"no come un tomate"→"no come tomates" 等）
 - [x] OBJECT_POOLS を修正後の文に合わせて更新
@@ -84,6 +86,7 @@
 - **Nivel 3/4**：解答後に両ボタンが表示される
 - 活用表：9動詞すべて `conjugate()` から動的生成、語幹＋語尾（語尾は下線強調）、PDFと同じレイアウト
 - 活用表音声：各動詞の活用表に音声ボタンを表示し、`assets/audio/conjugation/{不定詞}.mp3` を再生（失敗時は Web Speech API で代替）
+- 人称代名詞表音声：「単数」「複数」ヘッダーに音声ボタンを表示し、`assets/audio/pronouns/singular.mp3` / `plural.mp3` を再生（失敗時は Web Speech API で代替）
 
 ### 単語チェック（フラッシュカード）
 - 全37語（動詞9 + 名詞28）を収録。[`VOCAB`配列 in index.html]

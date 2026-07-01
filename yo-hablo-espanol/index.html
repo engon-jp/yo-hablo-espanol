@@ -250,6 +250,12 @@
     display:inline-flex; align-items:center; gap:5px;
   }
   .conj-audio:active{transform:translateY(2px); box-shadow:0 1px 0 var(--sun-d);}
+  .pron-head{display:flex; align-items:center; justify-content:center; gap:5px; flex-wrap:wrap;}
+  .pron-audio{
+    margin-left:0; min-height:30px; padding:4px 9px; border-radius:10px;
+    font-size:.78rem; box-shadow:0 2px 0 var(--sun-d);
+  }
+  .pron-audio:active{box-shadow:0 1px 0 var(--sun-d);}
 
   table.conj-table{width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed;}
   .conj-table th, .conj-table td{border:1.5px solid var(--line); padding:7px 5px; vertical-align:middle;}
@@ -844,6 +850,21 @@ function playConjugationAudio(inf){
   }catch(e){ fallback(); }
 }
 
+const PRONOUN_AUDIO_TEXT = {
+  singular: "yo, tú, él, ella, usted",
+  plural: "nosotros, nosotras, vosotros, vosotras, ellos, ellas, ustedes"
+};
+
+function playPronounAudio(group){
+  let usedFallback = false;
+  const fallback = ()=>{ if(!usedFallback){ usedFallback = true; speak(PRONOUN_AUDIO_TEXT[group] || ""); } };
+  try{
+    const audio = new Audio("assets/audio/pronouns/" + group + ".mp3");
+    audio.addEventListener("error", fallback, {once:true});
+    audio.play().catch(fallback);
+  }catch(e){ fallback(); }
+}
+
 
 /* =========================================================================
    4. 状態とサイクル
@@ -1271,7 +1292,7 @@ function buildPronounTable(){
     + '<div class="ref-card">'
     +   '<div class="ref-title"><span class="diamond">◇</span> 主語人称代名詞</div>'
     +   '<table class="conj-table pron-table">'
-    +     '<thead><tr><th></th><th>単数</th><th>複数</th></tr></thead>'
+    +     '<thead><tr><th></th><th><div class="pron-head"><span>単数</span><button class="conj-audio pron-audio" type="button" data-pron-group="singular" title="単数の主語人称代名詞を再生"><span>🔊</span><span>音声</span></button></div></th><th><div class="pron-head"><span>複数</span><button class="conj-audio pron-audio" type="button" data-pron-group="plural" title="複数の主語人称代名詞を再生"><span>🔊</span><span>音声</span></button></div></th></tr></thead>'
     +     '<tbody>'
     +       '<tr><th>1人称</th><td>'+c('yo','私')+'</td>'
     +         '<td><div class="stack">'+c('nosotros','私たち')+c('nosotras','')+'</div></td></tr>'
@@ -1311,8 +1332,11 @@ function buildVerbTable(inf){
 
 function openRef(type){
   elRefContent.innerHTML = (type === "pron") ? buildPronounTable() : buildVerbTable(state.current.verb);
-  const conjAudio = elRefContent.querySelector(".conj-audio");
+  const conjAudio = elRefContent.querySelector(".conj-audio[data-inf]");
   if(conjAudio) conjAudio.addEventListener("click", ()=>playConjugationAudio(conjAudio.dataset.inf));
+  elRefContent.querySelectorAll(".pron-audio").forEach(btn => {
+    btn.addEventListener("click", ()=>playPronounAudio(btn.dataset.pronGroup));
+  });
   elRefview.classList.add("show");
   elRefview.scrollTop = 0;
 }
